@@ -8,27 +8,33 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './by-countrie-page.component.html',
   styles: ``
 })
-export class ByCountriePageComponent implements OnInit{
+export class ByCountriePageComponent implements OnInit {
 
   private countryService:CountiresService;
-  private activatedRoute:ActivatedRoute;
-  public countriesList:Country[]=[];
+  private activatedRoute: ActivatedRoute;
+  public isLoading: boolean = false;
+  public initialValueInput?: string;
+  public countriesList: Country[] = [];
+
 
   constructor(activatedRoute:ActivatedRoute,countrieService:CountiresService){
     this.countryService=countrieService;
     this.activatedRoute=activatedRoute;
   }
 
-  //Esta clase de angular me permite trabajar con los parametros que hay en la URL
-  //En mi caso tengo el id ya que en el routing declare que una ruta tendra un parametro llamado id
   ngOnInit(): void {
-    this.activatedRoute.params.subscribe((params:any)=>{
-      console.log({params:params.id})
-    })
+    this.countriesList = this.countryService.cacheStore.byCountries.countries;
+    this.initialValueInput = this.countryService.cacheStore.byCountries.term;
   }
 
-  searchByCountry(country:string){
-    this.countryService.searchCountry(country).subscribe(countries=>this.countriesList=countries)
+
+  searchByCountry(country: string) {
+    this.isLoading = true;
+    this.countryService.searchCountry(country).subscribe(countries => {
+      this.countriesList = countries
+      this.isLoading = false;
+    })
+
   }
 
 }
